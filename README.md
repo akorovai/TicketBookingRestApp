@@ -1,3 +1,5 @@
+Конечно, вот обновленный README файл с примером JSON для класса ReservationDto:
+
 # Ticket Booking App
 
 Ticket Booking App is a web-based application that allows users to conveniently reserve movie tickets at a multiplex. With real-time seat availability and a user-friendly interface, users can easily select their preferred movie, screening time, and seats. The application provides information about screening rooms, available seats, and ticket prices. It supports multiple ticket types, such as adult, student, and child, with automatic calculation of the total amount to pay. Experience hassle-free movie ticket reservations with Ticket Booking App.
@@ -70,6 +72,16 @@ The Ticket Booking App provides the following functionality through its methods:
    - Accepts a request payload of type `IntervalDto` specifying the interval.
    - Returns a list of `MovieTimeDto` objects containing information about movies scheduled within the specified interval.
 
+   Example Request:
+   ```json
+   {
+     "startTime": "2023-06-15T10:00:00",
+     "endTime": "2023-06-15T18:00:00"
+   }
+   ```
+
+  
+
 3. `GET /cinema/screening/{IdScreening}` - Retrieves details of a specific screening.
    - Accepts the screening ID as a path variable.
    - Returns a `ScreeningDto` object containing detailed information about the screening, including hall and seat details.
@@ -80,16 +92,38 @@ The Ticket Booking App provides the following functionality through its methods:
 
 5. `PUT /cinema/screening/reservation/{IdScreening}` - Adds a reservation for a specific screening.
    - Accepts a request payload of type `AddReservationDto` containing reservation details.
-   - Accepts the
+   - Accepts the screening ID as a path variable.
+   - Returns a success message with the reservation ID if the reservation is added successfully.
+   - Returns an error message with the appropriate status code if the reservation is invalid or cannot be added.
 
-screening ID as a path variable.
-- Returns a success message with the reservation ID if the reservation is added successfully.
-- Returns an error message with the appropriate status code if the reservation is invalid or cannot be added.
 
 6. `GET /cinema/screening/reservation/{IdScreening}` - Retrieves information about a reservation for a specific screening.
    - Accepts the screening ID as a path variable.
    - Returns a `ReservationDto` object containing information about the reservation.
    - Returns an error message with the appropriate status code if the reservation is invalid or not found.
+     Example Request:
+   ```json
+   {
+   "name": "John",
+   "surname": "Doe",
+   "tickets": [{
+   "seatNumber": 1,
+   "ticketType": "ADULT",
+   "price": 10.0
+   },{
+   "seatNumber": 2,
+   "ticketType": "CHILD",
+   "price": 5.0
+   },{
+   "seatNumber": 3,
+   "ticketType": "STUDENT",
+   "price": 7.5
+   }]
+   }
+   ```
+
+
+   
 
 ## Building the Project
 
@@ -105,7 +139,9 @@ The command will compile the source code and package the application into a JAR 
 
 **Note:** The tests for the project are not yet implemented.
 
-To run the tests for the project, use the following command:
+To run the tests
+
+for the project, use the following command:
 
 ```
 mvn test

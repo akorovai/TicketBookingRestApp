@@ -95,32 +95,38 @@ The Ticket Booking App provides the following functionality through its methods:
    - Accepts the screening ID as a path variable.
    - Returns a success message with the reservation ID if the reservation is added successfully.
    - Returns an error message with the appropriate status code if the reservation is invalid or cannot be added.
-
+     
+   
+Example Request:
+   ```json
+   {
+   "name": "John",
+   "surname": "Doe",
+   "tickets": [
+      {
+   "seatNumber": "A1",
+   "ticketType": "ADULT",
+   "price": 10.0
+   }, 
+      {
+   "seatNumber": "A2",
+   "ticketType": "CHILD",
+   "price": 5.0
+   },
+      {
+   "seatNumber": "A3",
+   "ticketType": "STUDENT",
+   "price": 7.5
+   }
+   ]
+   }
+   ```
 
 6. `GET /cinema/screening/reservation/{IdScreening}` - Retrieves information about a reservation for a specific screening.
    - Accepts the screening ID as a path variable.
    - Returns a `ReservationDto` object containing information about the reservation.
    - Returns an error message with the appropriate status code if the reservation is invalid or not found.
-     Example Request:
-   ```json
-   {
-   "name": "John",
-   "surname": "Doe",
-   "tickets": [{
-   "seatNumber": 1,
-   "ticketType": "ADULT",
-   "price": 10.0
-   },{
-   "seatNumber": 2,
-   "ticketType": "CHILD",
-   "price": 5.0
-   },{
-   "seatNumber": 3,
-   "ticketType": "STUDENT",
-   "price": 7.5
-   }]
-   }
-   ```
+
 
 
    

@@ -112,7 +112,3 @@ mvn test
 ```
 
 The tests will be executed, and the results will be displayed in the console.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).

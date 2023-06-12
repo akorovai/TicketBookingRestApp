@@ -42,7 +42,6 @@ VALUES (5, 5, '2022-12-31 16:00:00', '2026-01-01 18:30:00');
 INSERT INTO screening (movie_id, room_id, start_time, end_time)
 VALUES (6, 6, '2022-12-31 10:00:00', '2026-01-01 12:30:00');
 
--- Inserting seats
 INSERT INTO seat (room_id, seat_number) VALUES (1, 'A1');
 INSERT INTO seat (room_id, seat_number) VALUES (1, 'A2');
 INSERT INTO seat (room_id, seat_number) VALUES (1, 'A3');

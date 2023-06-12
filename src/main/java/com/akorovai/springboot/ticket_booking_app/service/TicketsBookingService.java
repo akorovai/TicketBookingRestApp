@@ -50,6 +50,9 @@ public class TicketsBookingService implements TicketsBookingServiceInterface {
         if (Objects.isNull(startTime)|| Objects.isNull(endTime)) {
             throw new InvalidReservationException("Start time and end time must be provided");
         }
+        if (intervalDto.getStartTime().isAfter(intervalDto.getEndTime())) {
+            throw new InvalidReservationException("Start time must be before end time");
+        }
 
         return screeningRepository.getMovieScreeningsOrderByTitleAndStartTime().stream()
                 .filter(screening ->
@@ -92,7 +95,6 @@ public class TicketsBookingService implements TicketsBookingServiceInterface {
             throw new InvalidReservationException("Seats cannot be booked within 15 minutes of the screening");
         }
 
-
         List<Ticket> tickets = reservationDao.getTickets();
         if (tickets.stream().map(ticket -> seatRepository.findById(ticket.getSeatId())
                         .orElseThrow(() -> new RuntimeException("Seat not found")))
@@ -100,16 +102,16 @@ public class TicketsBookingService implements TicketsBookingServiceInterface {
             throw new InvalidReservationException("One or more seats are already booked for this screening");
         }
 
-
         List<ReservationTicket> reservationTickets = new ArrayList<>();
         double totalAmount = 0.0;
 
-        Reservation reservation = new Reservation();
-        reservation.setName(reservationDao.getName());
-        reservation.setSurname(reservationDao.getSurname());
-        reservation.setReservationTime(LocalDateTime.now());
-        reservation.setExpirationTime(LocalDateTime.now().plusMinutes(30));
-        reservation.setScreening(screening);
+        Reservation reservation = Reservation.builder()
+                .name(reservationDao.getName())
+                .surname(reservationDao.getSurname())
+                .reservationTime(LocalDateTime.now())
+                .expirationTime(LocalDateTime.now().plusMinutes(30))
+                .screening(screening)
+                .build();
 
         for (Ticket ticket : tickets) {
             Seat seat = seatRepository.findById(ticket.getSeatId())
@@ -118,11 +120,12 @@ public class TicketsBookingService implements TicketsBookingServiceInterface {
             ReservationTicketType reservationTicketType = ReservationTicketType.valueOf(ticket.getTicketType());
             double ticketPrice = reservationTicketType.getPrice();
 
-            ReservationTicket reservationTicket = new ReservationTicket();
-            reservationTicket.setSeat(seat);
-            reservationTicket.setReservation(reservation);
-            reservationTicket.setTicketType(reservationTicketType.getDisplayName());
-            reservationTicket.setAmount(ticketPrice);
+            ReservationTicket reservationTicket = ReservationTicket.builder()
+                    .seat(seat)
+                    .reservation(reservation)
+                    .ticketType(reservationTicketType.getDisplayName())
+                    .amount(ticketPrice)
+                    .build();
 
             reservationTickets.add(reservationTicket);
             totalAmount += ticketPrice;
@@ -133,6 +136,7 @@ public class TicketsBookingService implements TicketsBookingServiceInterface {
 
         return reservationRepository.save(reservation);
     }
+
     public boolean isSeatAlreadyBooked(Screening screening, Seat seat) {
         return ticketsRepository.findAll()
                 .stream()
@@ -143,56 +147,42 @@ public class TicketsBookingService implements TicketsBookingServiceInterface {
 
 
 
+
+
     @Override
     public ReservationDto getReservation(Long idScreening) {
         Reservation reservation = reservationRepository.findById(idScreening)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
-
-        ReservationDto reservationDto = new ReservationDto();
-        reservationDto.setName(reservation.getName());
-        reservationDto.setSurname(reservation.getSurname());
-        reservationDto.setReservationTime(reservation.getReservationTime());
-        reservationDto.setExpirationTime(reservation.getExpirationTime());
-        reservationDto.setAmount(reservation.getAmount());
-        List<ReservationTicket> list = ticketsRepository.findAll().stream()
-                .filter(e -> e.getReservation().getReservationId().equals(reservation.getReservationId()))
-                .toList();
-
-        List<ReservationTicketDto> reservationTicketDtos = list.stream()
-                .map(reservationTicket -> {
-                    ReservationTicketDto reservationTicketDto = new ReservationTicketDto();
-                    reservationTicketDto.setTicketId(reservationTicket.getTicketId());
-                    reservationTicketDto.setSeat(new SeatDto(reservationTicket.getSeat().getSeatId(), reservationTicket.getSeat().getSeatNumber()));
-                    reservationTicketDto.setTicketType(reservationTicket.getTicketType());
-                    reservationTicketDto.setAmount(reservationTicket.getAmount());
-                    return reservationTicketDto;
-                })
-                .toList();
-
-        reservationDto.setReservationTickets(reservationTicketDtos);
-
-
-        Screening screening = reservation.getScreening();
-        ScreeningForReservationDto screeningDto = new ScreeningForReservationDto();
-        screeningDto.setStartTime(screening.getStartTime());
-        screeningDto.setEndTime(screening.getEndTime());
-
-        Movie movie = screening.getMovie();
-        MovieDto movieDto = new MovieDto();
-        movieDto.setTitle(movie.getTitle());
-        movieDto.setDuration(movie.getDuration());
-        movieDto.setDescription(movie.getDescription());
-
-        screeningDto.setMovie(movieDto);
-
-        ScreeningRoom room = screening.getRoom();
-        ScreeningRoomDto roomDto = new ScreeningRoomDto();
-        roomDto.setName(room.getName());
-
-        screeningDto.setRoom(roomDto);
-
-        reservationDto.setScreening(screeningDto);
-
-        return reservationDto;
+        return ReservationDto.builder()
+                .name(reservation.getName())
+                .surname(reservation.getSurname())
+                .reservationTime(reservation.getReservationTime())
+                .expirationTime(reservation.getExpirationTime())
+                .amount(reservation.getAmount())
+                .reservationTickets(ticketsRepository.findAll().stream()
+                        .filter(e -> e.getReservation().getReservationId().equals(reservation.getReservationId()))
+                        .map(reservationTicket -> ReservationTicketDto.builder()
+                                .ticketId(reservationTicket.getTicketId())
+                                .seat(SeatDto.builder()
+                                        .seatId(reservationTicket.getSeat().getSeatId())
+                                        .seatNumber(reservationTicket.getSeat().getSeatNumber())
+                                        .build())
+                                .ticketType(reservationTicket.getTicketType())
+                                .amount(reservationTicket.getAmount())
+                                .build())
+                        .toList())
+                .screening(ScreeningForReservationDto.builder()
+                        .startTime(reservation.getScreening().getStartTime())
+                        .endTime(reservation.getScreening().getEndTime())
+                        .movie(MovieDto.builder()
+                                .title(reservation.getScreening().getMovie().getTitle())
+                                .duration(reservation.getScreening().getMovie().getDuration())
+                                .description(reservation.getScreening().getMovie().getDescription())
+                                .build())
+                        .room(ScreeningRoomDto.builder()
+                                .name(reservation.getScreening().getRoom().getName())
+                                .build())
+                        .build())
+                .build();
     }
 }

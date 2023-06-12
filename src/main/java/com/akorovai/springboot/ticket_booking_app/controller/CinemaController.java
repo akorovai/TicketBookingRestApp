@@ -4,6 +4,7 @@ import com.akorovai.springboot.ticket_booking_app.dto.*;
 import com.akorovai.springboot.ticket_booking_app.entities.Reservation;
 import com.akorovai.springboot.ticket_booking_app.error_handling.InvalidDateException;
 import com.akorovai.springboot.ticket_booking_app.error_handling.InvalidReservationException;
+import com.akorovai.springboot.ticket_booking_app.error_handling.NoMoviesFoundException;
 import com.akorovai.springboot.ticket_booking_app.service.TicketsBookingServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -42,16 +43,20 @@ public class CinemaController {
             }
             List<MovieTimeDto> movies = bookingService.getMovies(interval);
             if (movies.isEmpty()) {
-                throw new InvalidDateException("No movies found for the provided interval.");
+                throw new NoMoviesFoundException("No movies found for the provided interval.");
             }
 
             return ResponseEntity.ok(movies);
         } catch (InvalidDateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (NoMoviesFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while processing the request.");
         }
     }
+
 
     @GetMapping("screening/{IdScreening}")
     private ResponseEntity<?> getScreeningDetails(@PathVariable Long IdScreening) {

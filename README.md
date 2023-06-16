@@ -1,4 +1,4 @@
-Конечно, вот обновленный README файл с примером JSON для класса ReservationDto:
+ГЉГ®Г­ГҐГ·Г­Г®, ГўГ®ГІ Г®ГЎГ­Г®ГўГ«ГҐГ­Г­Г»Г© README ГґГ Г©Г« Г± ГЇГ°ГЁГ¬ГҐГ°Г®Г¬ JSON Г¤Г«Гї ГЄГ«Г Г±Г±Г  ReservationDto:
 
 # Ticket Booking App
 
@@ -24,7 +24,7 @@ To get a local copy of the project up and running, follow these steps:
 1. Clone the repository:
 
 ```
-git clone https://github.com/your-username/ticket_booking_app.git
+git clone https://github.com/akorovai/ticket_booking_app.git
 ```
 
 2. Navigate to the project directory:

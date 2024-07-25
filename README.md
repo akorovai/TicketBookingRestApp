@@ -1,6 +1,6 @@
 # Ticket Booking App
 
-Ticket Booking App is a web-based application that allows users to conveniently reserve movie tickets at a multiplex. With real-time seat availability and a user-friendly interface, users can easily select their preferred movie, screening time, and seats. The application provides information about screening rooms, available seats, and ticket prices. It supports multiple ticket types, such as adult, student, and child, with automatic calculation of the total amount to pay. Experience hassle-free movie ticket reservations with Ticket Booking App.
+Ticket Booking App is a web-based application that allows users to conveniently reserve movie tickets at a multiplex. With real-time seat availability, users can easily select their preferred movie, screening time, and seats. The application provides information about screening rooms, available seats, and ticket prices. It supports multiple ticket types, such as adult, student, and child, with automatic calculation of the total amount to pay. Experience hassle-free movie ticket reservations with Ticket Booking App.
 
 ## Technologies Used
 
